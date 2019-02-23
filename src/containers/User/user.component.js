@@ -3,6 +3,9 @@ import React from "react";
 import isLoading from "@hocs/isLoading";
 import {
   UserWrapper,
+  Card,
+  FileInput,
+  SubmitButton,
 } from "./user.style";
 
 /**
@@ -13,6 +16,21 @@ import {
 const UserPageContent = props => {
   return (
     <UserWrapper>
+      {props.researchers.map((r, index) => {
+          return (
+            <Card className="card" key={index}> 
+              <h3> {r.name} </h3>
+              <p> {r.description} </p>
+              <code> {r.query} </code>
+              <br />
+              <FileInput 
+                onChange={props.accessHandler(r.id)} 
+                defaultValue='https://cor.solid.community/public/test-data.n3'
+              />
+              <SubmitButton onClick={props.submitHandler(r.id)}>Submit</SubmitButton>
+            </Card>
+          );
+       })}
     </UserWrapper>
   );
 };

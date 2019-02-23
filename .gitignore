@@ -1,3 +1,7 @@
+# vim
+*.swp
+*.swo
+
 # Logs
 logs
 *.log
