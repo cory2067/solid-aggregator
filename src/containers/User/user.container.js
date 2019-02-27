@@ -39,6 +39,13 @@ class UserComponent extends Component<Props> {
     if (this.props.webId) {
       this.getProfileData();
     }
+
+    auth.trackSession(session => {
+    if (!session)
+      console.log('The user is not logged in')
+    else
+      console.log(`The user is ${session.webId}`)
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -69,18 +76,40 @@ class UserComponent extends Component<Props> {
   };
 
   submitHandler = (researchId) => {
-    return (event) => {
+    return async (event) => {
       const access = this.state.access[researchId]
       const urls = access.split('\n');
       if (!urls.length) {
         return alert("no urls provided");
       }
 
-      for (const url of urls) {
-        auth.fetch(url).then(console.log);
+      const data = {
+        query: "http://xmlns.com/foaf/0.1/age",
+        urls: urls
+      };
+      
+      const res = await auth.fetch("https://cor.localhost:8443/encrypted", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log("It completed!");
+      console.log(res);
+      if (res.status === 401) {
+        alert("Couldn't authenticate this request!");
+        return;
+      } 
+      if (res.status !== 200) {
+        alert("Could not complete request! Error " + res.status);
+        return;
       }
 
-    };
+      console.log(await res.blob());
+
+    }
   };
 
   render() {
