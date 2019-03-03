@@ -36,6 +36,7 @@ app.use(session({
 	saveUninitialized: 'true'
 }));
 */
+
 app.use('/', views);
 app.use('/api', api);
 app.use('/static', express.static('public'));

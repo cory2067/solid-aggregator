@@ -88,6 +88,9 @@ class UserComponent extends Component<Props> {
         urls: urls
       };
       
+      const res1 = await auth.fetch("https://cor.localhost:8443/private");
+      console.log(res1);
+
       const res = await auth.fetch("https://cor.localhost:8443/encrypted", {
         method: "POST",
         headers: {
