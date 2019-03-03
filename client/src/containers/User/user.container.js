@@ -92,7 +92,7 @@ class UserComponent extends Component<Props> {
         return alert("no urls provided");
       }
 
-      const data = {
+      const body = {
         query: "http://xmlns.com/foaf/0.1/age",
         docs: urls
       };
@@ -110,7 +110,7 @@ class UserComponent extends Component<Props> {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(body),
       });
 
       switch (res.status) {
@@ -129,12 +129,23 @@ class UserComponent extends Component<Props> {
           return alert("Error " + res.status);
       }
 
-      const result = await res.blob();
-      if (result.size === 0) {
+      const queryResult = await res.blob();
+      if (queryResult.size === 0) {
         return alert("No data found for this query");
       }
 
-      console.log(result);
+      const data = new FormData();
+      data.append('test', 'doggo');
+      data.append('data', queryResult);
+      console.log(data);
+
+      const submitPath = `http://${window.location.hostname}:5000/api/submit`;
+      const submissionRes = await fetch(submitPath, {
+        method: "POST",
+        body: data
+      });
+
+      console.log(submissionRes);
     }
   };
 

@@ -13,8 +13,10 @@ const api = require('./routes/api');
 const app = express();
 
 // set POST request body parser
+/*
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+*/
 
 // connect to db
 /*
@@ -36,6 +38,13 @@ app.use(session({
 	saveUninitialized: 'true'
 }));
 */
+
+// allow cors everywhere
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use('/', views);
 app.use('/api', api);
