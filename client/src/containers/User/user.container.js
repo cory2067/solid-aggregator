@@ -32,6 +32,7 @@ class UserComponent extends Component<Props> {
     this.state = {
       name: "",
       isLoading: false,
+      webId: '',
       access: {},
     };
   }
@@ -41,11 +42,13 @@ class UserComponent extends Component<Props> {
     }
 
     auth.trackSession(session => {
-    if (!session)
-      console.log('The user is not logged in')
-    else
-      console.log(`The user is ${session.webId}`)
-    })
+      if (!session) {
+        console.log('The user is not logged in');
+      } else { 
+        console.log(`The user is ${session.webId}`);
+        this.setState({webId: session.webId});
+      }
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -77,7 +80,13 @@ class UserComponent extends Component<Props> {
 
   submitHandler = (researchId) => {
     return async (event) => {
-      const access = this.state.access[researchId]
+      if (!this.state.webId) {
+        return alert("must be logged in to submit this request");
+      }
+
+      const host = this.state.webId.split("/").slice(0, 3).join('/');
+
+      const access = this.state.access[researchId] || "";
       const urls = access.split('\n');
       if (!urls.length) {
         return alert("no urls provided");
@@ -85,13 +94,18 @@ class UserComponent extends Component<Props> {
 
       const data = {
         query: "http://xmlns.com/foaf/0.1/age",
-        urls: urls
+        docs: urls
       };
       
-      const res1 = await auth.fetch("https://cor.localhost:8443/private");
-      console.log(res1);
+      // this request is kind of a hack -- auth client realizes this request needs
+      // credentials and takes note of that. i think it remembers the host,
+      // so /encrypted will properly authenticate as a side-effect
+      const testReq = await auth.fetch(`${host}/private`);
+      if (testReq.status !== 200) {
+        return alert("Couldn't authenticate on this server");
+      }
 
-      const res = await auth.fetch("https://cor.localhost:8443/encrypted", {
+      const res = await auth.fetch(`${host}/encrypted`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,19 +113,28 @@ class UserComponent extends Component<Props> {
         body: JSON.stringify(data),
       });
 
-      console.log("It completed!");
-      console.log(res);
-      if (res.status === 401) {
-        alert("Couldn't authenticate this request!");
-        return;
-      } 
-      if (res.status !== 200) {
-        alert("Could not complete request! Error " + res.status);
-        return;
+      switch (res.status) {
+        case 200:
+          console.log("Success!");
+          break; // everything good, continue
+        case 400:
+          return alert("Bad request: " + (await res.text()));
+        case 401:
+          return alert("Couldn't authenticate this request!");
+        case 404:
+          return alert("File not found: " + (await res.text()));
+        case 500:
+          return alert("The server crashed while processing this request");
+        default:
+          return alert("Error " + res.status);
       }
 
-      console.log(await res.blob());
+      const result = await res.blob();
+      if (result.size === 0) {
+        return alert("No data found for this query");
+      }
 
+      console.log(result);
     }
   };
 

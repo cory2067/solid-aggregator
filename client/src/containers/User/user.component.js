@@ -25,7 +25,7 @@ const UserPageContent = props => {
               <br />
               <FileInput 
                 onChange={props.accessHandler(r.id)} 
-                defaultValue='https://cor.solid.community/public/test-data.n3'
+                defaultValue='https://cor.localhost:8443/private/test.ttl'
               />
               <SubmitButton onClick={props.submitHandler(r.id)}>Submit</SubmitButton>
             </Card>
