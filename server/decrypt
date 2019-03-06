@@ -1,0 +1,6 @@
+#!/bin/bash
+
+DIR="$(dirname $0)"
+
+echo "Decrypting $1"
+openssl smime -decrypt -binary -in "$DIR/$1" -inform DER -out "$DIR/$1.seal" -inkey aggprivate.pem
