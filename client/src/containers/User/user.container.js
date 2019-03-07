@@ -22,6 +22,9 @@ const researchers = [
   }
 ];
 
+const aggKey = 'http://localhost:5000/static/public.pem';
+const resKey = 'http://localhost:5000/static/researcherpublic.key';
+
 /**
  * Container component for the User Page, containing example of how to fetch data from a POD
  */
@@ -94,7 +97,9 @@ class UserComponent extends Component<Props> {
 
       const body = {
         query: "http://xmlns.com/foaf/0.1/age",
-        docs: urls
+        docs: urls,
+        aggregatorKey: aggKey,
+        researcherKey: resKey
       };
       
       // this request is kind of a hack -- auth client realizes this request needs

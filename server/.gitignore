@@ -2,3 +2,4 @@ uploads
 *.swp
 *.pem
 *.seal
+tmp

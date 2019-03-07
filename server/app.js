@@ -33,9 +33,9 @@ mongoose.connect(url, {useNewUrlParser: true}, function (err) {
 
 // set up sessions
 app.use(session({
-	secret: 'session-secret',
-	resave: 'false',
-	saveUninitialized: 'true'
+  secret: 'session-secret',
+  resave: 'false',
+  saveUninitialized: 'true'
 }));
 */
 
@@ -59,6 +59,7 @@ app.use(function(req, res, next) {
 
 // route error handler
 app.use(function(err, req, res, next) {
+	console.log(err);
   res.status(err.status || 500);
   res.send({
     status: err.status,
