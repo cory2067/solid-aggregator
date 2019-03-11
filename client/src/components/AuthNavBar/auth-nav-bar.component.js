@@ -12,10 +12,16 @@ const navigation = [
     to: "/welcome"
   },
   {
-    id: "profile",
+    id: "user",
     icon: "img/people.svg",
-    label: "Profile",
-    to: "/profile"
+    label: "Participate",
+    to: "/user"
+  },
+  {
+    id: "researcher",
+    icon: "img/people.svg",
+    label: "Researchers",
+    to: "/researcher"
   }
 ];
 

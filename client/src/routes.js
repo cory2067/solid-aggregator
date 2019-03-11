@@ -24,8 +24,13 @@ const privateRoutes = [
     component: Profile
   },
   {
-    id: "userpanel",
+    id: "user",
     path: "/user",
+    component: User
+  },
+  {
+    id: "researcher",
+    path: "/researcher",
     component: User
   }
 ];
