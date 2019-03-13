@@ -37,7 +37,7 @@ export const Card = styled.div`
   }
 `;
 
-export const FileInput = styled.textarea`
+export const QueryInput = styled.textarea`
 	max-width: 800px;
 	height: 240px;
 	border: 3px solid #cccccc;

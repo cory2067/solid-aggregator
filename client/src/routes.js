@@ -9,7 +9,8 @@ import {
   PageNotFound,
   Welcome,
   RegistrationSuccess,
-  User
+  User,
+  Researcher
 } from "./containers";
 
 const privateRoutes = [
@@ -31,7 +32,7 @@ const privateRoutes = [
   {
     id: "researcher",
     path: "/researcher",
-    component: User
+    component: Researcher
   }
 ];
 
