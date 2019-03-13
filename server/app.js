@@ -1,8 +1,10 @@
-// require('dotenv').config();
+require('dotenv').config();
 
 const http = require('http');
 const bodyParser = require('body-parser');
 const express = require('express');
+const db = require('./db');
+
 // const session = require('express-session');
 // const mongoose = require('mongoose');
 
@@ -19,18 +21,9 @@ app.use(bodyParser.json());
 */
 
 // connect to db
-/*
-const url = process.env.MONGO_SRV;
-mongoose.set('useFindAndModify', false);
-mongoose.connect(url, {useNewUrlParser: true}, function (err) {
-  if (err) {
-    console.log("MongoDB connection error:");
-    console.log(err);
-  } else {
-    console.log("MongoDB connected");
-  }
-});
+db.init();
 
+/*
 // set up sessions
 app.use(session({
   secret: 'session-secret',
@@ -38,6 +31,7 @@ app.use(session({
   saveUninitialized: 'true'
 }));
 */
+
 
 // allow cors everywhere
 app.use(function(req, res, next) {

@@ -5,14 +5,25 @@ const shell = require('shelljs');
 const path = require('path');
 const fs = require('fs');
 const router = express.Router();
-const upload = multer({ dest: 'tmp/' })
+const mongo = require('../db');
+const bodyParser = require('body-parser');
+const upload = multer({ dest: 'tmp/' });
 
+// handle user submit encrypted data
 router.post('/submit', upload.single('data'), (req, res) => {
   console.log("Somebody submitted data!");
   console.log(req.file);
   console.log(req.body);
   shell.exec(resolvePath('.', 'decrypt') + ' ' + req.file.filename);
   res.send("ok!");
+});
+
+router.post('/study', bodyParser.json(), (req, res) => {
+  const studies = mongo.getDb().collection('studies');
+  studies.insertOne(req.body)
+    .then(result => {
+      res.send("ok!");
+    });
 });
 
 router.get('/aggregate', (req, res) => {

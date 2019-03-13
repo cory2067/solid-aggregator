@@ -8,7 +8,6 @@ import data from "@solid/query-ldflex";
 // const imgContext = "http://xmlns.com/foaf/0.1/img"
 
 const aggKey = 'http://localhost:5000/static/public.pem';
-const resKey = 'http://localhost:5000/static/researcherpublic.key';
 
 /**
  * Container component for the Researcher Page, containing example of how to fetch data from a POD
@@ -21,7 +20,7 @@ class ResearcherComponent extends Component<Props> {
       name: "",
       isLoading: false,
       webId: '',
-      access: {},
+      query: {},
     };
   }
   componentDidMount() {
@@ -64,68 +63,27 @@ class ResearcherComponent extends Component<Props> {
       return alert("must be logged in to submit this request");
     }
 
-    const host = this.state.webId.split("/").slice(0, 3).join('/');
-
-    const access = this.state.query || "";
-    const urls = access.split('\n');
-    if (!urls.length) {
-      return alert("no urls provided");
+    const req = JSON.parse(this.state.query);
+    if (!req.organization || !req.summary || !req.query || !req.key) {
+      return alert("malformed query");
     }
 
-    const body = {
-      query: "http://xmlns.com/foaf/0.1/age",
-      docs: urls,
-      aggregatorKey: aggKey,
-      researcherKey: resKey
-    };
-    
-    // this request is kind of a hack -- auth client realizes this request needs
-    // credentials and takes note of that. i think it remembers the host,
-    // so /encrypted will properly authenticate as a side-effect
-    const testReq = await auth.fetch(`${host}/private`);
-    if (testReq.status !== 200) {
-      return alert("Couldn't authenticate on this server");
-    }
+    req.aggKey = aggKey; // attach this aggregator's public key onto the request
+    req.webId = this.state.webId;
+    console.log(req);
 
-    const res = await auth.fetch(`${host}/encrypted`, {
+    const submitPath = `http://${window.location.hostname}:5000/api/study`;
+    const submissionRes = await fetch(submitPath, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(req)
     });
 
-    switch (res.status) {
-      case 200:
-        console.log("Success!");
-        break; // everything good, continue
-      case 400:
-        return alert("Bad request: " + (await res.text()));
-      case 401:
-        return alert("Couldn't authenticate this request!");
-      case 404:
-        return alert("File not found: " + (await res.text()));
-      case 500:
-        return alert("The server crashed while processing this request");
-      default:
-        return alert("Error " + res.status);
+    if (submissionRes.status === 200) {
+      alert("succesfully registered study!");
     }
-
-    const queryResult = await res.blob();
-    if (queryResult.size === 0) {
-      return alert("No data found for this query");
-    }
-
-    const data = new FormData();
-    data.append('test', 'doggo');
-    data.append('data', queryResult);
-    console.log(data);
-
-    const submitPath = `http://${window.location.hostname}:5000/api/submit`;
-    const submissionRes = await fetch(submitPath, {
-      method: "POST",
-      body: data
-    });
 
     console.log(submissionRes);
   };
