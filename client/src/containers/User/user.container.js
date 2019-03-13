@@ -7,21 +7,6 @@ import data from "@solid/query-ldflex";
 // const hasPhotoContext = "http://www.w3.org/2006/vcard/ns#hasPhoto";
 // const imgContext = "http://xmlns.com/foaf/0.1/img"
 
-const researchers = [
-  {
-    id: 0,
-    name: 'decentralized information group',
-    description: 'we are researching the average age of users',
-    query: 'average foaf:age',
-  },
-  {
-    id: 1,
-    name: 'some other research group',
-    description: 'we are researching the sum age of users',
-    query: 'sum foaf:age'
-  }
-];
-
 const aggKey = 'http://localhost:5000/static/public.pem';
 const resKey = 'http://localhost:5000/static/researcherpublic.key';
 
@@ -37,6 +22,7 @@ class UserComponent extends Component<Props> {
       isLoading: false,
       webId: '',
       access: {},
+      studies: [],
     };
   }
   componentDidMount() {
@@ -52,6 +38,11 @@ class UserComponent extends Component<Props> {
         this.setState({webId: session.webId});
       }
     });
+
+    // fetch list of studies from the server
+    fetch(`http://${window.location.hostname}:5000/api/studies`)
+      .then(res => res.json())
+      .then(studies => this.setState({studies}));
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -155,9 +146,9 @@ class UserComponent extends Component<Props> {
   };
 
   render() {
-    const { name, isLoading } = this.state;
+    const { name, isLoading, studies } = this.state;
     return (
-      <UserPageContent name={name} isLoading={isLoading} researchers={researchers}
+      <UserPageContent name={name} isLoading={isLoading} studies={studies}
         accessHandler={this.accessHandler} submitHandler={this.submitHandler}
       />
     );

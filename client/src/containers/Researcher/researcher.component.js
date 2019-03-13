@@ -20,7 +20,7 @@ const ResearcherPageContent = props => {
         <h1>Start a New Study</h1>
         <p>Enter a query in json format</p>
         <QueryInput 
-          onChange={props.queryHandler} 
+          onChange={props.newStudyHandler} 
         />
         <SubmitButton onClick={props.submitHandler}>Submit</SubmitButton>
       </Card>

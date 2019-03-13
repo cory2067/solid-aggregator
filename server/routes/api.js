@@ -26,6 +26,14 @@ router.post('/study', bodyParser.json(), (req, res) => {
     });
 });
 
+router.get('/studies', (req, res) => {
+  const studies = mongo.getDb().collection('studies');
+  studies.find({}).toArray()
+    .then(studies => {
+      res.send(studies);
+    });
+});
+
 router.get('/aggregate', (req, res) => {
   /*if (!req.fn) {
     return res.code(400).send("No aggregation function given");

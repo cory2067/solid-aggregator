@@ -20,7 +20,7 @@ class ResearcherComponent extends Component<Props> {
       name: "",
       isLoading: false,
       webId: '',
-      query: {},
+      newStudy: {},
     };
   }
   componentDidMount() {
@@ -53,9 +53,9 @@ class ResearcherComponent extends Component<Props> {
     this.setState({ name, isLoading: false });
   };
 
-  queryHandler = (event) => {
-    const query = event.target.value;
-    this.setState({query});
+  newStudyHandler = (event) => {
+    const newStudy = event.target.value;
+    this.setState({newStudy});
   };
 
   submitHandler = async (event) => {
@@ -63,7 +63,7 @@ class ResearcherComponent extends Component<Props> {
       return alert("must be logged in to submit this request");
     }
 
-    const req = JSON.parse(this.state.query);
+    const req = JSON.parse(this.state.newStudy);
     if (!req.organization || !req.summary || !req.query || !req.key) {
       return alert("malformed query");
     }
@@ -92,7 +92,7 @@ class ResearcherComponent extends Component<Props> {
     const { name, isLoading } = this.state;
     return (
       <ResearcherPageContent name={name} isLoading={isLoading}
-        queryHandler={this.queryHandler} submitHandler={this.submitHandler}
+        newStudyHandler={this.newStudyHandler} submitHandler={this.submitHandler}
       />
     );
   }
