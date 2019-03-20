@@ -34,10 +34,10 @@ const UserPageContent = props => {
               <code> { studyToString(r) } </code>
               <br />
               <FileInput 
-                onChange={props.accessHandler(r.id)} 
+                onChange={props.accessHandler(r._id)} 
                 defaultValue='https://cor.localhost:8443/private/test.ttl'
               />
-              <SubmitButton onClick={props.submitHandler(r.id)}>Submit</SubmitButton>
+              <SubmitButton onClick={props.submitHandler(r._id)}>Submit</SubmitButton>
             </Card>
           );
        })}

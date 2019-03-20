@@ -129,9 +129,10 @@ class UserComponent extends Component<Props> {
       if (queryResult.size === 0) {
         return alert("No data found for this query");
       }
-
+    
       const data = new FormData();
-      data.append('test', 'doggo');
+      data.append('study', researchId);
+      data.append('foo', "doggo");
       data.append('data', queryResult);
       console.log(data);
 
