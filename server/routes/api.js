@@ -41,6 +41,7 @@ router.post('/study', bodyParser.json(), (req, res) => {
 });
 
 router.get('/studies', (req, res) => {
+  console.log(req.query);
   const studies = mongo.getDb().collection('studies');
   const query = {};
   if (req.query.webid) {
@@ -49,47 +50,51 @@ router.get('/studies', (req, res) => {
 
   studies.find(query).toArray()
     .then(studies => {
+      console.log(studies);
       res.send(studies);
     });
 });
 
-router.get('/aggregate', (req, res) => {
+router.get('/aggregate', async (req, res) => {
   const studies = mongo.getDb().collection('studies');
-  /*if (!req.fn) {
-    return res.code(400).send("No aggregation function given");
-  }*/
+  const records = mongo.getDb().collection('records');
 
   console.log(req.query);
   if (!req.query.study) {
     return res.status(400).send("No study id provided");
   }
 
-  console.log("ree");
-  studies.findOne({_id: ObjectId(req.query.study)})
-    .then(study => {
-      console.log(study);
-      res.send(study);
-    });
+  // fetch rest of data for this study
+  const study = await studies.findOne({_id: ObjectId(req.query.study)});
+  if (!study) {
+    return res.status(400).send("Nonexistent study");
+  }
 
-  return;// res.send("ok");
+  // fetch metadata for all records for this study
+  // todo: handle this in more scalable way
+  const data = await records.find({study: req.query.study}).toArray();
+  console.log("Aggregating " + data.length + " records");
 
   const hrstart = process.hrtime(); // measure performance
-  const files = fs.readdirSync(resolvePath('uploads', ''));
   const context = new seal.SEALContext(2048, 128, 65536);
   const evaluator = new seal.Evaluator(context);
 
   console.log("loading ciphertext");
-  const ciphers = files.map((file) => {
-    return new seal.Ciphertext(resolvePath('uploads', file));
+ 
+  const valueCiphers = data.map((record) => {
+    return new seal.Ciphertext(record.valuePath);
   });
 
-  // no ciphertext what do
-  if (!ciphers.length) return res.send("");
+  const filterCiphers = data.map((record) => {
+    return new seal.Ciphertext(record.filterPath);
+  });
 
-  console.log("aggregating " + ciphers.length + " users");
-  const sum = ciphers[0];
-  for (let i = 1; i < ciphers.length; i++) {
-    evaluator.addInPlace(sum, ciphers[1]);
+  // no results what do...
+  if (!valueCiphers.length) return res.send("");
+
+  const sum = valueCiphers[0];
+  for (let i = 1; i < valueCiphers.length; i++) {
+    evaluator.addInPlace(sum, valueCiphers[1]);
   }
   console.log("aggregation complete");
 
@@ -98,6 +103,8 @@ router.get('/aggregate', (req, res) => {
   const hrend = process.hrtime(hrstart);
   console.log('Execution time: %ds %dms', hrend[0], hrend[1] / 1000000)
   res.sendFile(resolvePath('tmp', 'out.seal'));
+
+  // todo: wipe old data once aggregation finished
 });
 
 function resolvePath(dir, filename) {

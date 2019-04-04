@@ -8,16 +8,6 @@ import {
   SubmitButton,
 } from "./user.style";
 
-const filtersToString = (filters) => {
-  return filters.map(f => `(${f.predicate} ${f.comparison} ${f.value})`)
-                .join(", ");
-}
-
-// average(http://xmlns.com/foaf/0.1/age) where (gender == male)
-const studyToString = (study) => {
-  return `${study.query.function}(${study.query.target}) where ${filtersToString(study.filters)}`;
-};
-
 /**
  * User Page UI component, containing the styled components for the User Page
  * Image component will get theimage context and resolve the value to render.
@@ -31,7 +21,9 @@ const UserPageContent = props => {
             <Card className="card" key={index}> 
               <h3> {r.organization} </h3>
               <p> {r.summary} </p>
-              <code> { studyToString(r) } </code>
+              <code> { r.function } </code>
+              <br />
+              <code> { r.query } </code>
               <br />
               <FileInput 
                 onChange={props.accessHandler(r._id)} 

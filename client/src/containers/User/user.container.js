@@ -7,9 +7,6 @@ import data from "@solid/query-ldflex";
 // const hasPhotoContext = "http://www.w3.org/2006/vcard/ns#hasPhoto";
 // const imgContext = "http://xmlns.com/foaf/0.1/img"
 
-const aggKey = 'http://localhost:5000/static/public.pem';
-const resKey = 'http://localhost:5000/static/researcherpublic.key';
-
 /**
  * Container component for the User Page, containing example of how to fetch data from a POD
  */
@@ -81,16 +78,16 @@ class UserComponent extends Component<Props> {
       const host = this.state.webId.split("/").slice(0, 3).join('/');
 
       const access = this.state.access[researchId] || "";
+      const study = this.state.studies.filter((s) => s._id === researchId)[0];
+      
       const urls = access.split('\n');
       if (!urls.length) {
         return alert("no urls provided");
       }
 
       const body = {
-        query: "http://xmlns.com/foaf/0.1/age",
         docs: urls,
-        aggregatorKey: aggKey,
-        researcherKey: resKey
+        study: study,
       };
       
       // this request is kind of a hack -- auth client realizes this request needs
