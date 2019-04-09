@@ -89,26 +89,47 @@ router.get('/aggregate', async (req, res) => {
 
   // no results what do...
   if (!valueCiphers.length) return res.send("");
+  
+  const funcStr = study.function.split('(')[0];
+  console.log("Computing: " + funcStr);
+  const funcs = {
+    sum:      aggregation.sum,
+    count:    aggregation.count,
+    average:  aggregation.average,
+    ratio:    aggregation.average, // alias
+    variance: aggregation.variance,
+  };
 
-  const sum = aggregation.sum(valueCiphers, filterCiphers);
-
-  console.log("aggregation complete");
-
-  /*
-     sum
-     average
-     stdev
-     count
-     ratio
-  */
-
-  sum.save(resolvePath('tmp', 'out.seal'));
-
+  const result = funcs[funcStr](valueCiphers, filterCiphers);
+  const numPath = req.query.study + '-num.seal';
+  result.numerator.save(resolvePath('tmp', numPath));
+  
   const hrend = process.hrtime(hrstart);
+  console.log("aggregation complete");
   console.log('Execution time: %ds %dms', hrend[0], hrend[1] / 1000000)
-  res.sendFile(resolvePath('tmp', 'out.seal'));
 
+  if (!result.denominator) {
+    return res.send({
+      numerator: '/api/results/' + numPath
+    });
+  }
+
+  const denPath = req.query.study + '-den.seal';
+  result.denominator.save(resolvePath('tmp', denPath));
+
+  return res.send({
+    numerator: '/api/results/' + numPath,
+    denominator: '/api/results/' + denPath
+  });
+  
+  //res.sendFile(resolvePath('tmp', 'out.seal'));
   // todo: wipe old data once aggregation finished
+});
+
+router.get('/results/:path', async (req, res) => {
+  const path = resolvePath('tmp', req.params.path); 
+
+  res.sendFile(path);
 });
 
 function resolvePath(dir, filename) {
