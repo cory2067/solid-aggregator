@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const router = express.Router();
 const mongo = require('../db');
+const aggregation = require('../aggregation');
 const ObjectId = require('mongodb').ObjectID;
 const bodyParser = require('body-parser');
 const upload = multer({ dest: 'tmp/' });
@@ -76,9 +77,6 @@ router.get('/aggregate', async (req, res) => {
   console.log("Aggregating " + data.length + " records");
 
   const hrstart = process.hrtime(); // measure performance
-  const context = new seal.SEALContext(2048, 128, 65536);
-  const evaluator = new seal.Evaluator(context);
-
   console.log("loading ciphertext");
  
   const valueCiphers = data.map((record) => {
@@ -92,11 +90,17 @@ router.get('/aggregate', async (req, res) => {
   // no results what do...
   if (!valueCiphers.length) return res.send("");
 
-  const sum = valueCiphers[0];
-  for (let i = 1; i < valueCiphers.length; i++) {
-    evaluator.addInPlace(sum, valueCiphers[1]);
-  }
+  const sum = aggregation.sum(valueCiphers, filterCiphers);
+
   console.log("aggregation complete");
+
+  /*
+     sum
+     average
+     stdev
+     count
+     ratio
+  */
 
   sum.save(resolvePath('tmp', 'out.seal'));
 
