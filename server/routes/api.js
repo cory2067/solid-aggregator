@@ -88,8 +88,8 @@ router.get('/aggregate', async (req, res) => {
   });
 
   // no results what do...
-  if (!valueCiphers.length) return res.send("");
-  
+  if (!valueCiphers.length) return res.send({});
+
   const funcStr = study.function.split('(')[0];
   console.log("Computing: " + funcStr);
   const funcs = {

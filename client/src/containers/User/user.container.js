@@ -129,7 +129,6 @@ class UserComponent extends Component<Props> {
     
       const data = new FormData();
       data.append('study', researchId);
-      data.append('foo', "doggo");
       data.append('data', queryResult);
       console.log(data);
 
