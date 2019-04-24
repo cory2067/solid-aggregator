@@ -6,6 +6,7 @@
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@inrupt/inrupt-atomic-style-guide": "^0.1.18",
     "@inrupt/solid-react-components": "0.2.0-rc.0",
+    "@solid/jose": "^0.1.8",
     "@solid/query-ldflex": "^2.0.0",
     "@svgr/webpack": "2.4.1",
     "babel-core": "7.0.0-bridge.0",

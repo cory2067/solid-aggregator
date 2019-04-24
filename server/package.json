@@ -12,6 +12,7 @@
     "body-parser": "^1.18.3",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "express-http-to-https": "^1.1.4",
     "mongodb": "^3.1.13",
     "multer": "^1.4.1",
     "shelljs": "^0.8.3"

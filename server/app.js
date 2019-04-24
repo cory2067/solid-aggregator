@@ -1,9 +1,16 @@
 require('dotenv').config();
 
 const http = require('http');
+const https = require('https');
 const bodyParser = require('body-parser');
 const express = require('express');
 const db = require('./db');
+const fs = require('fs');
+
+const options = {
+    cert: fs.readFileSync('./fullchain.pem'),
+    key: fs.readFileSync('./privkey.pem')
+};
 
 // const session = require('express-session');
 // const mongoose = require('mongoose');
@@ -23,15 +30,6 @@ app.use(bodyParser.json());
 // connect to db
 db.init();
 
-/*
-// set up sessions
-app.use(session({
-  secret: 'session-secret',
-  resave: 'false',
-  saveUninitialized: 'true'
-}));
-*/
-
 
 // allow cors everywhere
 app.use(function(req, res, next) {
@@ -40,9 +38,15 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use('/', views);
+// app.use('/', views);
 app.use('/api', api);
 app.use('/static', express.static('public'));
+
+app.use(express.static('../client/build'))
+app.get('*', function (req, res) {
+    res.sendFile('/home/cjl2625/solid-aggregator/client/build/index.html');
+});
+
 
 // 404 route
 app.use(function(req, res, next) {
@@ -61,10 +65,17 @@ app.use(function(err, req, res, next) {
   });
 });
 
-// port config
-const port = 5000; 
-const server = http.Server(app);
+const httpsServer = https.createServer(options, app);
 
-server.listen(port, function() {
-  console.log('Server running on port: ' + port);
+httpsServer.listen(443, function() {
+  console.log('Server running on port: ' + 443);
 });
+
+// set up plain http server
+const redir = express();
+redir.get('*', function(req, res) {
+    res.redirect('https://' + req.headers.host + req.url);
+});
+
+const httpServer = http.createServer(redir);
+httpServer.listen(80);
