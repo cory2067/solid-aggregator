@@ -7,7 +7,7 @@ import data from "@solid/query-ldflex";
 // const hasPhotoContext = "http://www.w3.org/2006/vcard/ns#hasPhoto";
 // const imgContext = "http://xmlns.com/foaf/0.1/img"
 
-const aggKey = 'http://localhost:5000/static/public.pem';
+const aggKey = 'https://solid-aggregator.xyz/static/public.pem';
 
 /**
  * Container component for the Researcher Page, containing example of how to fetch data from a POD
@@ -72,7 +72,7 @@ class ResearcherComponent extends Component<Props> {
     req.webId = this.state.webId;
     console.log(req);
 
-    const submitPath = `http://${window.location.hostname}:5000/api/study`;
+    const submitPath = `https://${window.location.hostname}/api/study`;
     const submissionRes = await fetch(submitPath, {
       method: "POST",
       headers: {

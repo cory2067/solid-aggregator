@@ -37,7 +37,7 @@ class UserComponent extends Component<Props> {
     });
 
     // fetch list of studies from the server
-    fetch(`http://${window.location.hostname}:5000/api/studies`)
+    fetch(`https://${window.location.hostname}/api/studies`)
       .then(res => res.json())
       .then(studies => this.setState({studies}));
   }
@@ -132,13 +132,14 @@ class UserComponent extends Component<Props> {
       data.append('data', queryResult);
       console.log(data);
 
-      const submitPath = `http://${window.location.hostname}:5000/api/submit`;
+      const submitPath = `https://${window.location.hostname}/api/submit`;
       const submissionRes = await fetch(submitPath, {
         method: "POST",
         body: data
       });
 
       console.log(submissionRes);
+      alert("submitted!");
     }
   };
 
