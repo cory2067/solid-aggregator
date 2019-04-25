@@ -11,7 +11,7 @@ This API provides the following functionality:
 - Compute an aggregate for a study (`GET /api/aggregate`)
 
 # client
-A frontend for users (who want to participate in studies) and researchers (who want to open a new study). Note that users of normal pod providers (inrupt, solid.community, etc.) cannot submit data via this site. Instead, the pod must be running on my [modified server](https://github.com/cory2067/node-solid-server). 
+A frontend for users (who want to participate in studies) and researchers (who want to open a new study). Note that users of normal pod providers (inrupt, solid.community, etc.) cannot submit data via this site. Instead, the pod must be running on my [modified server](https://github.com/cory2067/node-solid-server). This was built using the [Inrupt react template](https://github.com/inrupt/generator-solid-react).
 
 The user tab is straightforward. Specify any documents on your pod to grant access to, and push submit to consent to a study.
 
@@ -29,8 +29,11 @@ The researcher page, out of laziness for making a decent UI, just accepts a JSON
 
 The function supports `sum`, `average`, `count`, and `ratio`. The functions `count` and `ratio` must contain a conditional expression, e.g. `count(?age > 15)`. 
 
+The important parts of the client code are `/client/src/containers/User` and `/client/src/containers/Researcher`. 
+
 # in development 
-Just open the `client` and `server` directories in two separate windows, then run `npm install` and `npm start` on each.
+There must be a `/server/.env`, file which defines the environment variable `DB_URI`, the URI for a mongodb instance. 
+Then, open the `client` and `server` directories in two separate windows, then run `npm install` and `npm start` on each.
 
 # in production
 The branch `production` shows some last-minute changes I made to make this work in production. - Use https, or else the authentication libraries will just refuse to work. 

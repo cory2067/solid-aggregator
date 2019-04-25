@@ -4,9 +4,7 @@ import ResearcherPageContent from "./researcher.component";
 import { withWebId } from "@inrupt/solid-react-components";
 import data from "@solid/query-ldflex";
 
-// const hasPhotoContext = "http://www.w3.org/2006/vcard/ns#hasPhoto";
-// const imgContext = "http://xmlns.com/foaf/0.1/img"
-
+// todo: extract to a config file
 const aggKey = 'http://localhost:5000/static/public.pem';
 
 /**
@@ -72,6 +70,7 @@ class ResearcherComponent extends Component<Props> {
     req.webId = this.state.webId;
     console.log(req);
 
+    // in dev, the server and client run on different ports
     const submitPath = `http://${window.location.hostname}:5000/api/study`;
     const submissionRes = await fetch(submitPath, {
       method: "POST",
