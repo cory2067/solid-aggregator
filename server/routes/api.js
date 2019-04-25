@@ -15,9 +15,8 @@ const upload = multer({ dest: 'tmp/' });
 router.post('/submit', upload.single('data'), async (req, res) => {
   const records = mongo.getDb().collection('records');
   console.log("Somebody submitted data!");
-  console.log(req.file);
   console.log(req.body);
-  console.log(process.cwd())
+
   shell.exec(resolvePath('.', 'decrypt') + ' ' + req.file.filename);
 
   const entry = {
@@ -33,6 +32,7 @@ router.post('/submit', upload.single('data'), async (req, res) => {
     });
 });
 
+// Register a new study
 router.post('/study', bodyParser.json(), (req, res) => {
   const studies = mongo.getDb().collection('studies');
   studies.insertOne(req.body)
@@ -41,6 +41,7 @@ router.post('/study', bodyParser.json(), (req, res) => {
     });
 });
 
+// Get all studies, or all studies that match a given webId
 router.get('/studies', (req, res) => {
   console.log(req.query);
   const studies = mongo.getDb().collection('studies');
@@ -56,6 +57,9 @@ router.get('/studies', (req, res) => {
     });
 });
 
+// Compute an aggregate (must specify a studyId)
+// returns the URI of the numerator and (possibly) denominator of the
+// aggregation
 router.get('/aggregate', async (req, res) => {
   const studies = mongo.getDb().collection('studies');
   const records = mongo.getDb().collection('records');
@@ -100,14 +104,17 @@ router.get('/aggregate', async (req, res) => {
     variance: aggregation.variance,
   };
 
+  // do the actual homomorphic aggregation here
   const result = funcs[funcStr](valueCiphers, filterCiphers);
-  const numPath = req.query.study + '-num.seal';
-  result.numerator.save(resolvePath('tmp', numPath));
   
   const hrend = process.hrtime(hrstart);
   console.log("aggregation complete");
   console.log('Execution time: %ds %dms', hrend[0], hrend[1] / 1000000)
-
+  
+  // save all results to filesystem
+  const numPath = req.query.study + '-num.seal';
+  result.numerator.save(resolvePath('tmp', numPath));
+  
   if (!result.denominator) {
     return res.send({
       numerator: '/api/results/' + numPath
@@ -121,15 +128,15 @@ router.get('/aggregate', async (req, res) => {
     numerator: '/api/results/' + numPath,
     denominator: '/api/results/' + denPath
   });
-  
-  //res.sendFile(resolvePath('tmp', 'out.seal'));
-  // todo: wipe old data once aggregation finished
 });
 
+// fetch the actual results, using the URI specified by calling /aggregate
+// returns encrypted ciphertext that can only be decrypted by the researcher
 router.get('/results/:path', async (req, res) => {
   const path = resolvePath('tmp', req.params.path); 
 
   res.sendFile(path);
+  // todo: should this delete resource afterward?
 });
 
 function resolvePath(dir, filename) {

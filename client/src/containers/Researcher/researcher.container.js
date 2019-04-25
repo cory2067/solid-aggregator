@@ -4,9 +4,7 @@ import ResearcherPageContent from "./researcher.component";
 import { withWebId } from "@inrupt/solid-react-components";
 import data from "@solid/query-ldflex";
 
-// const hasPhotoContext = "http://www.w3.org/2006/vcard/ns#hasPhoto";
-// const imgContext = "http://xmlns.com/foaf/0.1/img"
-
+// todo: extract to a config file
 const aggKey = 'https://solid-aggregator.xyz/static/public.pem';
 
 /**
@@ -73,6 +71,7 @@ class ResearcherComponent extends Component<Props> {
     console.log(req);
 
     const submitPath = `https://${window.location.hostname}/api/study`;
+
     const submissionRes = await fetch(submitPath, {
       method: "POST",
       headers: {

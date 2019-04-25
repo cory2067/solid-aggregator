@@ -12,26 +12,12 @@ const options = {
     key: fs.readFileSync('./privkey.pem')
 };
 
-// const session = require('express-session');
-// const mongoose = require('mongoose');
-
 const views = require('./routes/views');
 const api = require('./routes/api');
 
-// initialize express app
 const app = express();
-
-// set POST request body parser
-/*
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-*/
-
-// connect to db
 db.init();
 
-
-// allow cors everywhere
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

@@ -85,6 +85,7 @@ class UserComponent extends Component<Props> {
         return alert("no urls provided");
       }
 
+      // args to submit to the pod /encrypted
       const body = {
         docs: urls,
         study: study,
@@ -92,7 +93,9 @@ class UserComponent extends Component<Props> {
       
       // this request is kind of a hack -- auth client realizes this request needs
       // credentials and takes note of that. i think it remembers the host,
-      // so /encrypted will properly authenticate as a side-effect
+      // so /encrypted will properly authenticate as a side-effect.
+      // it's gonna throw a 401 in the console the first time around,
+      // but Everything Is OK
       const testReq = await auth.fetch(`${host}/private`);
       if (testReq.status !== 200) {
         return alert("Couldn't authenticate on this server");
@@ -132,6 +135,7 @@ class UserComponent extends Component<Props> {
       data.append('data', queryResult);
       console.log(data);
 
+      // pass encrypted data to the aggregation server
       const submitPath = `https://${window.location.hostname}/api/submit`;
       const submissionRes = await fetch(submitPath, {
         method: "POST",

@@ -2,6 +2,8 @@
 *.swp
 *.swo
 
+client/build
+
 # Logs
 logs
 *.log

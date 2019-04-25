@@ -19,7 +19,7 @@ const UserPageContent = props => {
       {props.studies.map((r, index) => {
           return (
             <Card className="card" key={index}> 
-              <h3> {r.organization} </h3>
+              <h3> <a href={r.webId}> {r.organization} </a> </h3>
               <p> {r.summary} </p>
               <code> { r.function } </code>
               <br />
