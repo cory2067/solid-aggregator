@@ -3,14 +3,19 @@
 set -e
 DIR="$(dirname $0)"
 
+# Decrypt outer layer (using aggregator private key)
 echo "Decrypting $1"
 openssl smime -decrypt -binary -in "$DIR/tmp/$1" -inform DER -out "$DIR/tmp/$1.tar" -inkey private.pem
-
-tar -C "$DIR/tmp" -xf "$DIR/tmp/$1.tar"
-mv "$DIR/tmp/value.seal" "$DIR/uploads/$1-V.seal"
-mv "$DIR/tmp/filter.seal" "$DIR/uploads/$1-F.seal"
-
 rm "$DIR/tmp/$1"
+
+# extract two ciphertexts and store for later aggregation
+mkdir -p "$DIR/tmp/$1"
+tar -C "$DIR/tmp/$1" -xf "$DIR/tmp/$1.tar"
+mv $DIR/tmp/$1/value*.seal "$DIR/uploads/$1-V.seal"
+mv $DIR/tmp/$1/filter*.seal "$DIR/uploads/$1-F.seal"
+
+# cleanup
 rm "$DIR/tmp/$1.tar"
+rm -rf "$DIR/tmp/$1"
 
 echo "SUCCESS"
